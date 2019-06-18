@@ -16,3 +16,20 @@ or subscribe the available mailing list(s).
 						Massimiliano Pala
 						OpenCA Project Manager
 
+
+Cogosense Patches
+==================
+
+OpenCA tools are used to create enrolment certificates and verify enrolment certificates for an iOS MDM we have implemented. We don't need new features, but we do need to keep the software building on newer systems.
+
+v1.3.1
+------
+Compiled and run under Alpine Linux 3.7
+LibreSSL 2.6.5
+
+gcc version 6.4
+
+Built using commands:
+
+    configure CFLAGS="-Wno-implicit-function-declaration -Wno-format-security"
+    make install
