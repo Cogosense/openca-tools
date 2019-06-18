@@ -105,9 +105,9 @@ int verify_callback (int ok, X509_STORE_CTX *ctx)
 	// }
 
 	if(!ok)
-        switch (ctx->error) {
+        switch (X509_STORE_CTX_get_error(ctx)) {
 		case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
-			X509_NAME_oneline(X509_get_issuer_name(ctx->current_cert),buf,256);
+			X509_NAME_oneline(X509_get_issuer_name(X509_STORE_CTX_get_current_cert(ctx)),buf,256);
 			if( verbose && chainVerify)
 				BIO_printf(bio_out," (error:%s)\n",
 					X509_verify_cert_error_string(err));
@@ -159,23 +159,23 @@ int cb(int ok, X509_STORE_CTX *ctx)
 	int depth;
 	int echo=1;
 
-	if( err_depth == ctx->error_depth ) echo = 0;
-	if( !chainVerify && ctx->error_depth ) echo = 0;
+	if( err_depth == X509_STORE_CTX_get_error_depth(ctx) ) echo = 0;
+	if( !chainVerify && X509_STORE_CTX_get_error_depth(ctx) ) echo = 0;
 	if( echo ) {
-		BIO_printf(bio_out,"depth:%d serial:",ctx->error_depth);
-		i2a_ASN1_INTEGER( bio_out, X509_get_serialNumber(ctx->current_cert) );
+		BIO_printf(bio_out,"depth:%d serial:",X509_STORE_CTX_get_error_depth(ctx));
+		i2a_ASN1_INTEGER( bio_out, X509_get_serialNumber(X509_STORE_CTX_get_current_cert(ctx)) );
 		BIO_puts (bio_out, " subject:");
-		X509_NAME_print_ex (bio_out, X509_get_subject_name (ctx->current_cert), 
+		X509_NAME_print_ex (bio_out, X509_get_subject_name (X509_STORE_CTX_get_current_cert(ctx)), 
                                     0, XN_FLAG_RFC2253&(~ASN1_STRFLGS_ESC_MSB));
 		BIO_puts (bio_out, "\n");
-		err_depth = ctx->error_depth;
+		err_depth = X509_STORE_CTX_get_error_depth(ctx);
 	}
 
 	if (!ok)
 		{
 		if( echo && verbose )
 			BIO_printf( bio_out, "        error:%d:%s\n",
-				ctx->error, X509_verify_cert_error_string(ctx->error));
+				X509_STORE_CTX_get_error(ctx), X509_verify_cert_error_string(X509_STORE_CTX_get_error(ctx)));
 		/* since we are just checking the certificates, it is
 		 * ok if they are self signed. But we should still warn
 		 * the user.
@@ -185,23 +185,23 @@ int cb(int ok, X509_STORE_CTX *ctx)
 		/* Continue after extension errors too */
 		if( !stop_on_errors )
 			{
-			if (ctx->error == X509_V_ERR_CERT_HAS_EXPIRED) ok=1;
-			if (ctx->error == X509_V_ERR_INVALID_CA) ok=1;
-			if (ctx->error == X509_V_ERR_PATH_LENGTH_EXCEEDED) ok=1;
-			if (ctx->error == X509_V_ERR_INVALID_PURPOSE) ok=1;
-			if (ctx->error == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ok=1;
-			if (ctx->error == X509_V_ERR_CRL_HAS_EXPIRED) ok=1;
-			if (ctx->error == X509_V_ERR_CRL_NOT_YET_VALID) ok=1;
-			if (ctx->error == X509_V_ERR_UNHANDLED_CRITICAL_EXTENSION) ok=1;
-			if (ctx->error == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_CERT_HAS_EXPIRED) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_INVALID_CA) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_PATH_LENGTH_EXCEEDED) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_INVALID_PURPOSE) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_CRL_HAS_EXPIRED) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_CRL_NOT_YET_VALID) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_UNHANDLED_CRITICAL_EXTENSION) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ok=1;
 			}
 		if( !chainVerify )
 			{
-			if (ctx->error == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT ) ok=1;
-			if (ctx->error == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ) ok=1;
-			if (ctx->error == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE ) ok=1;
-			if (ctx->error == X509_V_ERR_CERT_UNTRUSTED ) ok=1;
-			if (ctx->error == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT ) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE ) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_CERT_UNTRUSTED ) ok=1;
+			if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) ok=1;
 			}
 		}
 	// if (!verbose)

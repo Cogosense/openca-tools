@@ -2,6 +2,8 @@
  * SCEP - Message building and handling functions
  */
 
+#include <openssl/evp.h>
+
 #include "scep.h"
 #include "scep_sigattr.h"
 #include "scep_bio.h"
@@ -11,12 +13,12 @@
 SCEP_MSG *SCEP_MSG_new( int messageType, X509 *cert, EVP_PKEY *pkey,
 	X509 *recip_cert, SCEP_MSG *inMsg, X509_REQ *req, X509 *issued_cert,
 	SCEP_ISSUER_AND_SUBJECT *cert_info, PKCS7_ISSUER_AND_SERIAL *p7_ias,
-	X509_CRL *crl, X509 *cacert, EVP_CIPHER cipher);
+	X509_CRL *crl, X509 *cacert, const EVP_CIPHER *cipher);
 
 int SCEP_MSG_free( SCEP_MSG *msg );
 
 /* Encrypt/Decrypt data within a SCEP_MSG if any */
-int SCEP_MSG_encrypt( SCEP_MSG *msg, X509 *recip_cert, EVP_CIPHER cipher );
+int SCEP_MSG_encrypt( SCEP_MSG *msg, X509 *recip_cert, const EVP_CIPHER *cipher );
 unsigned char *SCEP_MSG_decrypt( SCEP_MSG *msg, EVP_PKEY *pkey, X509 *cert,
 	long *len );
 

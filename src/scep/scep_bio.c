@@ -8,7 +8,7 @@
 PKCS7_ISSUER_AND_SERIAL	*d2i_PKCS7_ias_bio( PKCS7_ISSUER_AND_SERIAL **ias,
 	       	BIO *bio) {
 	unsigned char buffer[1024];
-	unsigned char *tmp = NULL;
+	const unsigned char *tmp = NULL;
 
 	PKCS7_ISSUER_AND_SERIAL	*ret = NULL;
 	int len = 0;
@@ -336,7 +336,7 @@ int SCEP_MSG_print( BIO *bio, SCEP_MSG *msg, EVP_PKEY *pkey, X509 *cert ) {
 				X509_get_issuer_name(sigcert) ) ) {
 			BIO_printf(bio, "            Serial Number: %s\n",
 				BN_bn2hex(ASN1_INTEGER_to_BN(
-					msg->signer_cert->cert_info->serialNumber, NULL)));
+					X509_get_serialNumber(msg->signer_cert), NULL)));
 		} else {
 			/* Silly Serial Number */
 			BIO_printf(bio, "            Serial Number: %s\n", "0x0 (fake)" );
@@ -546,7 +546,6 @@ int B64_write_bio_PKCS7 ( BIO *bio, PKCS7 *p7 ) {
 	if( !p7 ) return 0;
 
 	if(!(b64 = BIO_new(BIO_f_base64()))) {
-		PKCS7err(PKCS7_F_B64_WRITE_PKCS7,ERR_R_MALLOC_FAILURE);
 		return 0;
 	}
 	

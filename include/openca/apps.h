@@ -141,4 +141,10 @@ X509 *load_cert(BIO *err, const char *file, int format,
 EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
 	const char *pass, ENGINE *e, const char *key_descrip);
 
+#ifndef OPENSSL_NO_ENGINE
+#include <openca/general.h>
+
+ENGINE *load_engine (const char *name, STACK *pre_cmds, 
+					STACK *post_cmds, BIO *bio_out);
+#endif // OPENSSL_NO_ENGINE
 #endif

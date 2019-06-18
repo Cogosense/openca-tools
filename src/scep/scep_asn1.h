@@ -4,7 +4,6 @@
 
 #include "scep.h"
 
-#include <openssl/asn1_mac.h>
 #include <openssl/pkcs7.h>
 #include <openssl/x509.h>
 #include <openssl/bio.h>

@@ -46,7 +46,7 @@ SCEP_MSG *SCEP_MSG_new( int messageType, X509 *cert, EVP_PKEY *pkey,
 		X509 *recip_cert, SCEP_MSG *inMsg, X509_REQ *req,
 		X509 *issued_cert, SCEP_ISSUER_AND_SUBJECT *cert_info,
 		PKCS7_ISSUER_AND_SERIAL *ias, X509_CRL *crl, X509 *cacert,
-		EVP_CIPHER cipher ) {
+		const EVP_CIPHER *cipher ) {
 
 	SCEP_MSG *msg = NULL;
 	PKCS7_SIGNER_INFO *si = NULL;
@@ -251,7 +251,7 @@ SCEP_MSG *SCEP_MSG_new( int messageType, X509 *cert, EVP_PKEY *pkey,
 					"senderNonce", &len);
 			if( tmp ) {
 				if (debug)
-					BIO_printf( debug_bio, "%s:%d: [Debug Info]    %d\n", __FILE__, __LINE__, tmp);
+					BIO_printf( debug_bio, "%s:%d: [Debug Info]    %s\n", __FILE__, __LINE__, tmp);
 				SCEP_set_recipientNonce( msg, tmp, len );
 				OPENSSL_free( tmp );
 			}
@@ -341,7 +341,7 @@ int SCEP_MSG_free( SCEP_MSG *msg ) {
 	}
 }
 
-int SCEP_MSG_encrypt( SCEP_MSG *msg, X509 *recip_cert, EVP_CIPHER cipher ) {
+int SCEP_MSG_encrypt( SCEP_MSG *msg, X509 *recip_cert, const EVP_CIPHER *cipher ) {
 
 	BIO *inbio = NULL;
 	int ret = 0;
@@ -416,7 +416,7 @@ int SCEP_MSG_encrypt( SCEP_MSG *msg, X509 *recip_cert, EVP_CIPHER cipher ) {
 	/* Encrypt Data */
 	msg->env_data.p7env = PKCS7_encrypt( 
 		msg->env_data.recip_info.sk_recip_certs,
-		inbio, &cipher, PKCS7_BINARY );
+		inbio, cipher, PKCS7_BINARY );
 
 	ERR_clear_error();
 

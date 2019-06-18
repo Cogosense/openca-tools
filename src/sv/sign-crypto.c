@@ -74,8 +74,8 @@ int do_sign (int verbose, BIO *bio_out, BIO *bio_err,
     /* This code is copied from crypto/x509v3/v3_purp.c in OpenSSL 0.9.7c
        the original macro name is ku_reject
      */
-    if ( ((x509)->ex_flags & EXFLAG_KUSAGE) &&
-         !((x509)->ex_kusage & (KU_DIGITAL_SIGNATURE)) )
+    if ( (X509_get_extension_flags(x509) & EXFLAG_KUSAGE) &&
+         !(X509_get_extended_key_usage(x509) & (KU_DIGITAL_SIGNATURE)) )
     {
         BIO_printf(bio_err, "[Error]: This certificate cannot be used for signing because the key usage denies this.\n");
         exit(23);

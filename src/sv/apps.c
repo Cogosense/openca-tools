@@ -128,13 +128,6 @@ extern int verbose;
 #include <openca/apps.h>
 #include <openca/general.h>
 
-#if !defined(OPENSSL_NO_RC4) && !defined(OPENSSL_NO_RSA)
-/* Looks like this stuff is worth moving into separate function */
-static EVP_PKEY *
-load_netscape_key(BIO *err, BIO *key, const char *file,
-		const char *key_descrip, int format);
-#endif
-
 int str2fmt(char *s)
 	{
 	if 	((*s == 'D') || (*s == 'd'))
@@ -445,10 +438,6 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
 		pkey=PEM_read_bio_PrivateKey(key,NULL,
 			(pem_password_cb *)password_callback, &cb_data);
 		}
-#if !defined(OPENSSL_NO_RC4) && !defined(OPENSSL_NO_RSA)
-	else if (format == FORMAT_NETSCAPE || format == FORMAT_IISSGC)
-		pkey = load_netscape_key(err, key, file, key_descrip, format);
-#endif
 	else if (format == FORMAT_PKCS12)
 		{
 		PKCS12 *p12 = d2i_PKCS12_bio(key, NULL);
@@ -469,51 +458,6 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
 	return(pkey);
 	}
 
-#if !defined(OPENSSL_NO_RC4) && !defined(OPENSSL_NO_RSA)
-static EVP_PKEY *
-load_netscape_key(BIO *err, BIO *key, const char *file,
-		const char *key_descrip, int format)
-	{
-	EVP_PKEY *pkey;
-	BUF_MEM *buf;
-	RSA	*rsa;
-	const unsigned char *p;
-	int size, i;
-
-	buf=BUF_MEM_new();
-	pkey = EVP_PKEY_new();
-	size = 0;
-	if (buf == NULL || pkey == NULL)
-		goto error;
-	for (;;)
-		{
-		if (!BUF_MEM_grow(buf,size+1024*10))
-			goto error;
-		i = BIO_read(key, &(buf->data[size]), 1024*10);
-		size += i;
-		if (i == 0)
-			break;
-		if (i < 0)
-			{
-				BIO_printf(err, "Error reading %s %s",
-					key_descrip, file);
-				goto error;
-			}
-		}
-	p=(unsigned char *)buf->data;
-	rsa = d2i_RSA_NET(NULL,&p,(long)size,NULL,
-		(format == FORMAT_IISSGC ? 1 : 0));
-	if (rsa == NULL)
-		goto error;
-	BUF_MEM_free(buf);
-	EVP_PKEY_set1_RSA(pkey, rsa);
-	return pkey;
-error:
-	BUF_MEM_free(buf);
-	EVP_PKEY_free(pkey);
-	return NULL;
-	}
-#endif /* ndef OPENSSL_NO_RC4 */
 /*************************************************************/
 /*                      end key loading                      */
 /*************************************************************/

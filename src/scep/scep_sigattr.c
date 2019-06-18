@@ -45,7 +45,7 @@ X509_ATTRIBUTE *SCEP_get_attr_by_name( STACK_OF(X509_ATTRIBUTE) *attrs,
 	/* scan all attributes for the one we are looking for		*/
 	for (i = 0; i < sk_X509_ATTRIBUTE_num(attrs); i++) {
 		attr = sk_X509_ATTRIBUTE_value(attrs, i);
-		if (OBJ_cmp(attr->object, asn1_obj) == 0) {
+		if (OBJ_cmp(X509_ATTRIBUTE_get0_object(attr), asn1_obj) == 0) {
 			found = 1;
 			break;
 		}
@@ -68,16 +68,15 @@ unsigned char *SCEP_get_octect_attr_by_name (STACK_OF(X509_ATTRIBUTE) *attrs,
 	int len = 0;
 
 	if( ((attr = SCEP_get_attr_by_name( attrs, attrname )) == NULL) ||
-		(asn1_type = sk_ASN1_TYPE_value(attr->value.set,0)) == NULL) {
+		(asn1_type = X509_ATTRIBUTE_get0_type(attr,0)) == NULL) {
 		return NULL;
 	}
 
-	if ((attr->value.set == NULL ) || 
-			(sk_ASN1_TYPE_num(attr->value.set) == 0)) {
+	if (X509_ATTRIBUTE_count(attr) == 0) {
 			goto err;
 	}
 
-	asn1_type = sk_ASN1_TYPE_value(attr->value.set, 0);
+	asn1_type = X509_ATTRIBUTE_get0_type(attr, 0);
 	if (ASN1_TYPE_get(asn1_type) != V_ASN1_OCTET_STRING) {
 		goto err;
 	}
@@ -86,7 +85,7 @@ unsigned char *SCEP_get_octect_attr_by_name (STACK_OF(X509_ATTRIBUTE) *attrs,
 	 * returning data pointer */
 	len = ASN1_STRING_length(asn1_type->value.octet_string);
 	data = (unsigned char *)malloc(len);
-	memcpy(data, ASN1_STRING_data(asn1_type->value.octet_string),
+	memcpy(data, ASN1_STRING_get0_data(asn1_type->value.octet_string),
 			len);
 
 	if( attr_len ) *attr_len = len;
@@ -110,7 +109,7 @@ char *SCEP_get_string_attr_by_name (STACK_OF(X509_ATTRIBUTE) *attrs,
 		return NULL;
 	}
 
-	if ((asn1_type = sk_ASN1_TYPE_value(attr->value.set,0)) == NULL) {
+	if ((asn1_type = X509_ATTRIBUTE_get0_type(attr,0)) == NULL) {
 		return NULL;
 	}
 
@@ -123,7 +122,7 @@ char *SCEP_get_string_attr_by_name (STACK_OF(X509_ATTRIBUTE) *attrs,
 	/* unpack the ASN1_STRING into a C-String (0-terminated)	*/
 	length = ASN1_STRING_length(asn1_type->value.asn1_string);
 	data = (char *)malloc(length + 1);
-	memcpy(data, ASN1_STRING_data(asn1_type->value.asn1_string),
+	memcpy(data, ASN1_STRING_get0_data(asn1_type->value.asn1_string),
 			length);
 	data[length] = '\0';
 
@@ -297,7 +296,7 @@ int SCEP_add_attr_by_nid(STACK_OF(X509_ATTRIBUTE) *sk, int nid, int atrtype,
 
 	for (i=0; i<sk_X509_ATTRIBUTE_num(sk); i++) {
 		attr=sk_X509_ATTRIBUTE_value(sk,i);
-		if (OBJ_obj2nid(attr->object) == nid) {
+		if (OBJ_obj2nid(X509_ATTRIBUTE_get0_object(attr)) == nid) {
 			X509_ATTRIBUTE_free(attr);
 			found = i;
 			break;

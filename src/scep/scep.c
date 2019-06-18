@@ -282,7 +282,7 @@ int	main(int argc, char *argv[]) {
 	ASN1_INTEGER *sno = NULL;
 
 	/* encryption algorithm */
-	EVP_CIPHER cipher = *EVP_des_ede3_cbc();
+	const EVP_CIPHER *cipher = EVP_des_ede3_cbc();
 
 	/* Private key for the signer */
 	EVP_PKEY *pkey = NULL;
@@ -473,7 +473,7 @@ int	main(int argc, char *argv[]) {
 			}
 #endif
 		else if (strcmp(*argv,"-des") == 0)
-			cipher=*EVP_des_cbc();
+			cipher=EVP_des_cbc();
 		else if (strcmp(*argv,"-v") == 0)
 			verbose=1;
 		else if (strcmp(*argv,"-debug") == 0)
