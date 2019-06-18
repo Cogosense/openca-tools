@@ -3,6 +3,7 @@
  */
 
 #include "scep_bio.h"
+#include "scep_msg.h"
 
 PKCS7_ISSUER_AND_SERIAL	*d2i_PKCS7_ias_bio( PKCS7_ISSUER_AND_SERIAL **ias,
 	       	BIO *bio) {

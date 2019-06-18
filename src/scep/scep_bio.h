@@ -15,6 +15,9 @@
 #include <openssl/err.h>
 #include <openssl/bn.h>
 
+/* Load a Base64 encoded message into SCEP_MSG structure */
+SCEP_MSG *PEM_read_bio_SCEP_MSG( BIO *bio );
+
 /* Load/write a PKCS7 ISSUER and SERIAL from bio */
 PKCS7_ISSUER_AND_SERIAL	*d2i_PKCS7_ias_bio( PKCS7_ISSUER_AND_SERIAL **ias,
 	       	BIO *bio);
