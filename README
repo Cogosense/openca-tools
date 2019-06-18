@@ -33,3 +33,15 @@ Built using commands:
 
     configure CFLAGS="-Wno-implicit-function-declaration -Wno-format-security"
     make install
+
+v1.3.2
+------
+Compiled and run under Alpine Linux 3.9
+OpenSSL v1.1.1b
+
+gcc version 8.3.0
+
+Built using commands:
+
+    configure CFLAGS="-Wno-implicit-function-declaration -Wno-format-security"
+    make install
