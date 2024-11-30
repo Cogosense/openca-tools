@@ -2,8 +2,9 @@ dnl -*- mode: m4; -*-
 dnl Process this file with autoconf to produce a configure script.
 
 dnl Autoconf boilerplate/
-AC_INIT(src/sv/sv.c)
-AC_PREREQ(2.50)
+AC_INIT(openca-tools,`cat VERSION` )
+AC_CONFIG_SRCDIR([src/sv/sv.c])
+AC_PREREQ([2.72])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -50,9 +51,9 @@ else
 	ac_cv_func_malloc_0_nonnull=yes
 fi
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 
-AC_PROG_LIBTOOL
+LT_INIT
 
 AC_PROG_EGREP
 
@@ -60,11 +61,7 @@ CPU=`uname -p`
 AC_SUBST(CPU)
 
 dnl Automake boilerplate.
-AM_INIT_AUTOMAKE(openca-tools,`cat VERSION` )
-
-if [[ "x$iphone_build" = "xno" ]] ; then
-	AM_PROG_CC_C_O
-fi
+AM_INIT_AUTOMAKE
 
 AM_MAINTAINER_MODE
 
@@ -173,17 +170,6 @@ AC_SUBST(LIBTOOL_DEPS)
 dnl Setup dist stuff
 AC_SUBST(ac_aux_dir)
 
-if [[ "x$iphone_build" = "xno" ]] ; then
-	dnl check for libraries
-	dnl AC_CHECK_LIB(nsl, gethostbyname)
-	dnl AC_CHECK_LIB(socket, socket)
-	dnl AC_CHECK_LIB(resolv, res_query)
-
-	AC_HEADER_STDC
-	AC_HEADER_SYS_WAIT
-	AC_CHECK_HEADERS([stdlib.h string.h sys/socket.h syslog.h])
-fi
-
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_PID_T
@@ -211,23 +197,7 @@ AC_SUBST(EXEC_PREFIX)
 
 dnl check for stack protection of gcc
 if [[ "$CC" = "gcc" ]] ; then
-	AC_CHECK_C_OPTION(-fstack-check)
-	AC_CHECK_C_OPTION(-maccumulate-outgoing-args)
-	if [[ "x${extra_checks}" = "xyes" ]] ; then
-		AC_CHECK_C_OPTION(-Wall)
-		AC_CHECK_C_OPTION(-Wmissing-field-initializers)
-		AC_CHECK_C_OPTION(-Wmissing-parameter-type)
-		AC_CHECK_C_OPTION(-Wtype-limits)
-		AC_CHECK_C_OPTION(-Wuninitialized)
-		AC_CHECK_C_OPTION(-Wconversion)
-		AC_CHECK_C_OPTION(-Werror)
-		AC_CHECK_C_OPTION(-Wfatal-errors)
-	fi
-
-	dnl AC_CHECK_C_OPTION(-m64)
-	dnl AC_CHECK_C_OPTION(-rdynamic)
-	dnl AC_CHECK_C_OPTION(--export-dynamic)
-	dnl AC_CHECK_C_OPTION(--export-all-symbols)
+	CFLAGS="$CFLAGS -fstack-check"
 fi
 
 EXTRA_CFLAGS=$CFLAGS
@@ -257,8 +227,8 @@ dnl AC_PROG_MAKE_SET
 dnl AC_PROG_LN_S
 
 dnl Add libtool support.
-dnl AM_PROG_LIBTOOL
-dnl AC_PROG_LIBTOOL
+dnl LT_INIT
+dnl LT_INIT
 
 dnl Automatically update the libtool script if it becomes out-of-date.
 dnl AC_SUBST(LIBTOOL_DEPS)
@@ -267,7 +237,7 @@ dnl Setup dist stuff
 AC_SUBST(ac_aux_dir)
 
 AC_ARG_WITH( build-dir,
-	AC_HELP_STRING( [--with-build-dir=DIR], [sets the DEST_DIR var
+	AS_HELP_STRING([--with-build-dir=DIR],[sets the DEST_DIR var
 (default is "")]),
 	build_dir=$withval, build_dir= )
 AC_SUBST(build_dir)
@@ -279,12 +249,12 @@ fi
 AC_SUBST(DESTDIR)
 
 AC_ARG_WITH( openca-user,
-	AC_HELP_STRING( [--with-openca-user=ARG], [sets the OpenCA's user id (default is root)]),
+	AS_HELP_STRING([--with-openca-user=ARG],[sets the OpenCA's user id (default is root)]),
 	openca_user=$withval, openca_user=root )
 AC_SUBST(openca_user)
 
 AC_ARG_WITH( openca-group,
-	AC_HELP_STRING( [--with-openca-group=ARG], [sets the OpenCA's group id (default is root)]),
+	AS_HELP_STRING([--with-openca-group=ARG],[sets the OpenCA's group id (default is root)]),
 	openca_group=$withval, openca_group=root )
 AC_SUBST(openca_group)
 
@@ -294,7 +264,7 @@ AC_PATH_PROG( POD2MAN, pod2man,pod2man,
 
 dnl OpenSSL prefix
 AC_ARG_WITH( openssl-prefix,
-        AC_HELP_STRING( [--with-openssl-prefix=DIR], [openssl prefix]),
+        AS_HELP_STRING([--with-openssl-prefix=DIR],[openssl prefix]),
         openssl_prefix=$withval, openssl_prefix= )
 AC_SUBST(openssl_prefix)
 
@@ -306,7 +276,7 @@ AC_PATH_PROG( OPENSSL, openssl, openssl,
 	$openssl_path)
 
 AC_ARG_WITH( openca-prefix,
-	AC_HELP_STRING( [--with-openca-prefix=OPENCAPREFIX], [sets OpenCA install prefix (default is EPREFIX/OpenCA)]),
+	AS_HELP_STRING([--with-openca-prefix=OPENCAPREFIX],[sets OpenCA install prefix (default is EPREFIX/OpenCA)]),
 	openca_prefix=$withval, openca_prefix=${exec_prefix}/OpenCA)
 AC_SUBST(openca_prefix)
 
@@ -439,13 +409,13 @@ AC_SUBST(INSTALL_BUILDER)
 dnl AC_MSG_ERROR( [****** ($DIST_NAME) IBUILDER is : $ibuilder and INSTALL_BUILDER is $INSTALL_BUILDER] );
 
 dnl Write Makefiles.
-AC_OUTPUT(
-	Makefile
+AC_CONFIG_FILES([Makefile
 	src/sv/Makefile
 	src/scep/Makefile
 	src/crmf/Makefile
 	docs/Makefile
 	contrib/install-builder/openca-tools.xml
 	contrib/install-builder/openca/tools.xml
-)
+])
+AC_OUTPUT
 

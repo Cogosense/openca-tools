@@ -44,7 +44,7 @@ endif
 endif
 endif
 
-INCLUDES = -I$(top_srcdir)/include $(openssl_cflags) $(COND_INCLUDES)
+AM_CPPFLAGS = -I$(top_srcdir)/include $(openssl_cflags) $(COND_INCLUDES)
 
 openca_scep_SOURCES = \
 	scep_asn1.h \

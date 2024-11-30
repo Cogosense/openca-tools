@@ -33,7 +33,7 @@ endif
 endif
 
 bin_PROGRAMS = openca-sv
-INCLUDES = -I$(top_srcdir)/include $(COND_INCLUDES) $(openssl_cflags)
+AM_CPPFLAGS = -I$(top_srcdir)/include $(COND_INCLUDES) $(openssl_cflags)
 
 
 openca_sv_SOURCES =  \

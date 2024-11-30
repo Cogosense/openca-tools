@@ -31,7 +31,7 @@ endif
 endif
 
 bin_PROGRAMS = openca-crmf
-INCLUDES = -I$(top_srcdir)/include $(COND_INCLUDES) $(openssl_cflags)
+AM_CPPFLAGS = -I$(top_srcdir)/include $(COND_INCLUDES) $(openssl_cflags)
 
 openca_crmf_SOURCES =  \
 	crmf_asn1.c \
