@@ -40,14 +40,14 @@ CRMF_REQ *PEM_read_bio_CRMF_REQ( BIO *bp ) {
 	return (CRMF_REQ *) PEM_ASN1_read_bio( (char *(*)()) d2i_CRMF_REQ, 
 				PEM_STRING_CRMF_REQ, bp, NULL, NULL, NULL);
 #else
-	return (CRMF_REQ *) PEM_ASN1_read_bio( (void *(*)()) d2i_CRMF_REQ, 
+	return (CRMF_REQ *) PEM_ASN1_read_bio( (void *(*)(void **, const unsigned char **, long)) d2i_CRMF_REQ, 
 				PEM_STRING_CRMF_REQ, bp, NULL, NULL, NULL);
 #endif
 }
 
 
 int PEM_write_bio_CRMF_REQ( BIO *bp, CRMF_REQ *o ) {
-	return PEM_ASN1_write_bio ( (int (*)())i2d_CRMF_REQ, 
+	return PEM_ASN1_write_bio ( (int (*)(const void *, unsigned char **))i2d_CRMF_REQ, 
 			PEM_STRING_CRMF_REQ, bp, (char *) o, NULL, 
 				NULL, 0, NULL, NULL );
 }
